@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVER UNDER DOUBLE SAME (OUDS)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .dice {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+        }
+        .results, .dice-container, #bet-form {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>OVER UNDER DOUBLE SAME (OUDS)</h1>
+    <p>
+        Rules: Roll the dice twice. After the first roll, decide if the second roll will be 
+        <strong>Over</strong> or <strong>Under</strong> the first roll's total. Place a wager between 1-10 points!
+    </p>
+    <p>Current Points: <span id="points">20</span></p>
+    
+    <!-- First Roll -->
+    <button id="roll1-btn">Roll Dice 1</button>
+    <div class="dice-container">
+        <img id="dice1-img" class="dice" src="" alt="Dice 1">
+        <img id="dice2-img" class="dice" src="" alt="Dice 2">
+    </div>
+    <p>Dice 1 Total: <span id="roll1-sum">-</span></p>
+
+    <!-- Betting Section -->
+    <form id="bet-form" class="hidden">
+        <label>
+            Bet:
+            <input type="radio" name="bet" value="over" required> Over
+            <input type="radio" name="bet" value="under"> Under
+        </label>
+        <br>
+        <label>
+            Wager (1-10): 
+            <input type="number" id="wager" min="1" max="10" required>
+        </label>
+        <br>
+        <button type="submit">Submit Bet & Roll 2</button>
+    </form>
+
+    <!-- Second Roll -->
+    <div id="roll2-section" class="hidden">
+        <div class="dice-container">
+            <img id="dice3-img" class="dice" src="" alt="Dice 3">
+            <img id="dice4-img" class="dice" src="" alt="Dice 4">
+        </div>
+        <p>Dice 2 Total: <span id="roll2-sum">-</span></p>
+        <p id="result-message"></p>
+    </div>
+
+    <script>
+        const diceImages = {
+            1: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Dice-1-b.svg",
+            2: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Dice-2-b.svg",
+            3: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Dice-3-b.svg",
+            4: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Dice-4-b.svg",
+            5: "https://upload.wikimedia.org/wikipedia/commons/0/08/Dice-5-b.svg",
+            6: "https://upload.wikimedia.org/wikipedia/commons/2/26/Dice-6-b.svg"
+        };
+
+        let points = 20;
+        let roll1Sum = 0;
+
+        document.getElementById('roll1-btn').addEventListener('click', () => {
+            const roll1 = Math.floor(Math.random() * 6) + 1;
+            const roll2 = Math.floor(Math.random() * 6) + 1;
+            roll1Sum = roll1 + roll2;
+
+            document.getElementById('dice1-img').src = diceImages[roll1];
+            document.getElementById('dice2-img').src = diceImages[roll2];
+            document.getElementById('roll1-sum').textContent = roll1Sum;
+
+            document.getElementById('bet-form').classList.remove('hidden');
+        });
+
+        document.getElementById('bet-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const bet = document.querySelector('input[name="bet"]:checked').value;
+            const wager = parseInt(document.getElementById('wager').value);
+
+            const roll3 = Math.floor(Math.random() * 6) + 1;
+            const roll4 = Math.floor(Math.random() * 6) + 1;
+            const roll2Sum = roll3 + roll4;
+
+            document.getElementById('dice3-img').src = diceImages[roll3];
+            document.getElementById('dice4-img').src = diceImages[roll4];
+            document.getElementById('roll2-sum').textContent = roll2Sum;
+
+            const outcome = roll2Sum > roll1Sum ? 'over' : 'under';
+            const win = bet === outcome;
+            points += win ? wager : -wager;
+
+            document.getElementById('points').textContent = points;
+            document.getElementById('result-message').textContent = 
+                `Roll 2 was ${outcome.toUpperCase()}. You ${win ? 'win' : 'lose'} ${wager} points.`;
+
+            document.getElementById('roll2-section').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
